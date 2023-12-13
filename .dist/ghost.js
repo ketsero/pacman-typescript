@@ -1,6 +1,7 @@
 "use strict";
-class Ghost {
-    constructor(x, y, width, height, speed, imageX, imageY, imageWidth, imageHeight, range) {
+var Ghost = /** @class */ (function () {
+    function Ghost(x, y, width, height, speed, imageX, imageY, imageWidth, imageHeight, range) {
+        var _this = this;
         this.x = x;
         this.y = y;
         this.width = width;
@@ -14,25 +15,25 @@ class Ghost {
         this.range = range;
         this.randomTargetIndex = parseInt(Math.random() * 4);
         this.target = randomTargetsForGhosts[this.randomTargetIndex];
-        setInterval(() => {
-            this.changeRandomDirection();
+        setInterval(function () {
+            _this.changeRandomDirection();
         }, 10000);
     }
-    isInRange() {
-        let xDistance = Math.abs(pacman.getMapX() - this.getMapX());
-        let yDistance = Math.abs(pacman.getMapY() - this.getMapY());
+    Ghost.prototype.isInRange = function () {
+        var xDistance = Math.abs(pacman.getMapX() - this.getMapX());
+        var yDistance = Math.abs(pacman.getMapY() - this.getMapY());
         if (Math.sqrt(xDistance * xDistance + yDistance * yDistance) <=
             this.range) {
             return true;
         }
         return false;
-    }
-    changeRandomDirection() {
-        let addition = 1;
+    };
+    Ghost.prototype.changeRandomDirection = function () {
+        var addition = 1;
         this.randomTargetIndex += addition;
         this.randomTargetIndex = this.randomTargetIndex % 4;
-    }
-    moveProcess() {
+    };
+    Ghost.prototype.moveProcess = function () {
         if (this.isInRange()) {
             this.target = pacman;
         }
@@ -45,8 +46,8 @@ class Ghost {
             this.moveBackwards();
             return;
         }
-    }
-    moveBackwards() {
+    };
+    Ghost.prototype.moveBackwards = function () {
         switch (this.direction) {
             case 4: // Right
                 this.x -= this.speed;
@@ -61,8 +62,8 @@ class Ghost {
                 this.y -= this.speed;
                 break;
         }
-    }
-    moveForwards() {
+    };
+    Ghost.prototype.moveForwards = function () {
         switch (this.direction) {
             case 4: // Right
                 this.x += this.speed;
@@ -77,9 +78,9 @@ class Ghost {
                 this.y += this.speed;
                 break;
         }
-    }
-    checkCollisions() {
-        let isCollided = false;
+    };
+    Ghost.prototype.checkCollisions = function () {
+        var isCollided = false;
         if (map[parseInt(this.y / oneBlockSize)][parseInt(this.x / oneBlockSize)] == 1 ||
             map[parseInt(this.y / oneBlockSize + 0.9999)][parseInt(this.x / oneBlockSize)] == 1 ||
             map[parseInt(this.y / oneBlockSize)][parseInt(this.x / oneBlockSize + 0.9999)] == 1 ||
@@ -87,9 +88,9 @@ class Ghost {
             isCollided = true;
         }
         return isCollided;
-    }
-    changeDirectionIfPossible() {
-        let tempDirection = this.direction;
+    };
+    Ghost.prototype.changeDirectionIfPossible = function () {
+        var tempDirection = this.direction;
         this.direction = this.calculateNewDirection(map, parseInt(this.target.x / oneBlockSize), parseInt(this.target.y / oneBlockSize));
         if (typeof this.direction == "undefined") {
             this.direction = tempDirection;
@@ -112,13 +113,13 @@ class Ghost {
             this.moveBackwards();
         }
         console.log(this.direction);
-    }
-    calculateNewDirection(map, destX, destY) {
-        let mp = [];
-        for (let i = 0; i < map.length; i++) {
+    };
+    Ghost.prototype.calculateNewDirection = function (map, destX, destY) {
+        var mp = [];
+        for (var i = 0; i < map.length; i++) {
             mp[i] = map[i].slice();
         }
-        let queue = [
+        var queue = [
             {
                 x: this.getMapX(),
                 y: this.getMapY(),
@@ -128,75 +129,75 @@ class Ghost {
             },
         ];
         while (queue.length > 0) {
-            let poped = queue.shift();
+            var poped = queue.shift();
             if (poped.x == destX && poped.y == destY) {
                 return poped.moves[0];
             }
             else {
                 mp[poped.y][poped.x] = 1;
-                let neighborList = this.addNeighbors(poped, mp);
-                for (let i = 0; i < neighborList.length; i++) {
+                var neighborList = this.addNeighbors(poped, mp);
+                for (var i = 0; i < neighborList.length; i++) {
                     queue.push(neighborList[i]);
                 }
             }
         }
         return 1; // direction
-    }
-    addNeighbors(poped, mp) {
-        let queue = [];
-        let numOfRows = mp.length;
-        let numOfColumns = mp[0].length;
+    };
+    Ghost.prototype.addNeighbors = function (poped, mp) {
+        var queue = [];
+        var numOfRows = mp.length;
+        var numOfColumns = mp[0].length;
         if (poped.x - 1 >= 0 &&
             poped.x - 1 < numOfRows &&
             mp[poped.y][poped.x - 1] != 1) {
-            let tempMoves = poped.moves.slice();
+            var tempMoves = poped.moves.slice();
             tempMoves.push(d_Left);
             queue.push({ x: poped.x - 1, y: poped.y, moves: tempMoves });
         }
         if (poped.x + 1 >= 0 &&
             poped.x + 1 < numOfRows &&
             mp[poped.y][poped.x + 1] != 1) {
-            let tempMoves = poped.moves.slice();
+            var tempMoves = poped.moves.slice();
             tempMoves.push(d_Right);
             queue.push({ x: poped.x + 1, y: poped.y, moves: tempMoves });
         }
         if (poped.y - 1 >= 0 &&
             poped.y - 1 < numOfColumns &&
             mp[poped.y - 1][poped.x] != 1) {
-            let tempMoves = poped.moves.slice();
+            var tempMoves = poped.moves.slice();
             tempMoves.push(d_Up);
             queue.push({ x: poped.x, y: poped.y - 1, moves: tempMoves });
         }
         if (poped.y + 1 >= 0 &&
             poped.y + 1 < numOfColumns &&
             mp[poped.y + 1][poped.x] != 1) {
-            let tempMoves = poped.moves.slice();
+            var tempMoves = poped.moves.slice();
             tempMoves.push(d_Bottom);
             queue.push({ x: poped.x, y: poped.y + 1, moves: tempMoves });
         }
         return queue;
-    }
-    getMapX() {
-        let mapX = parseInt(this.x / oneBlockSize);
+    };
+    Ghost.prototype.getMapX = function () {
+        var mapX = parseInt(this.x / oneBlockSize);
         return mapX;
-    }
-    getMapY() {
-        let mapY = parseInt(this.y / oneBlockSize);
+    };
+    Ghost.prototype.getMapY = function () {
+        var mapY = parseInt(this.y / oneBlockSize);
         return mapY;
-    }
-    getMapXRightSide() {
-        let mapX = parseInt((this.x * 0.99 + oneBlockSize) / oneBlockSize);
+    };
+    Ghost.prototype.getMapXRightSide = function () {
+        var mapX = parseInt((this.x * 0.99 + oneBlockSize) / oneBlockSize);
         return mapX;
-    }
-    getMapYRightSide() {
-        let mapY = parseInt((this.y * 0.99 + oneBlockSize) / oneBlockSize);
+    };
+    Ghost.prototype.getMapYRightSide = function () {
+        var mapY = parseInt((this.y * 0.99 + oneBlockSize) / oneBlockSize);
         return mapY;
-    }
-    changeAnimation() {
+    };
+    Ghost.prototype.changeAnimation = function () {
         this.currentFrame =
             this.currentFrame == this.frameCount ? 1 : this.currentFrame + 1;
-    }
-    draw() {
+    };
+    Ghost.prototype.draw = function () {
         canvasContext.save();
         canvasContext.drawImage(ghostFrames, this.imageX, this.imageY, this.imageWidth, this.imageHeight, this.x, this.y, this.width, this.height);
         canvasContext.restore();
@@ -204,15 +205,16 @@ class Ghost {
         canvasContext.strokeStyle = "red";
         canvasContext.arc(this.x + oneBlockSize / 2, this.y + oneBlockSize / 2, this.range * oneBlockSize, 0, 2 * Math.PI);
         canvasContext.stroke();
-    }
-}
-let updateGhosts = () => {
-    for (let i = 0; i < ghosts.length; i++) {
+    };
+    return Ghost;
+}());
+var updateGhosts = function () {
+    for (var i = 0; i < ghosts.length; i++) {
         ghosts[i].moveProcess();
     }
 };
-let drawGhosts = () => {
-    for (let i = 0; i < ghosts.length; i++) {
+var drawGhosts = function () {
+    for (var i = 0; i < ghosts.length; i++) {
         ghosts[i].draw();
     }
 };
